@@ -12,15 +12,10 @@ RUN apt-get update && apt-get install -y \
     locales \
     xvfb \
     python3.9 \
-    python3-pip \
-    python3.9-distutils
+    python3-pip
 
-# Install packages for system Python and Python 3.9
-RUN python3 -m pip install -U pip && \
-    python3 -m pip install -U python-dotenv catkin_tools && \
-    python3.9 -m pip install -U pip && \
-    python3.9 -m pip install -U flask python-dotenv jinja2 werkzeug
-
+# RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN python3 -m pip install -U python-dotenv catkin_tools flask
 RUN rosdep update && \
     echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc && \
     echo "alias start='catkin build && source devel/setup.bash && roslaunch turtle_agent agent.launch'" >> /root/.bashrc && \
