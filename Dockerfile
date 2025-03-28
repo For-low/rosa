@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 RUN python3 -m pip install -U pip && \
     python3 -m pip install -U python-dotenv catkin_tools && \
     python3.9 -m pip install -U pip && \
-    python3.9 -m pip install -U flask python-dotenv jinja2 werkzeug
+    python3.9 -m pip install -U "pydantic<2" flask python-dotenv jinja2 werkzeug
 
 RUN rosdep update && \
     echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc && \
@@ -31,9 +31,9 @@ COPY . /app/
 WORKDIR /app/
 
 RUN /bin/bash -c 'if [ "$DEVELOPMENT" = "true" ]; then \
-    python3.9 -m pip install --user --ignore-installed PyYAML -e .; \
+    python3.9 -m pip install --user --ignore-installed PyYAML "pydantic<2" -e .; \
     else \
-    python3.9 -m pip install --ignore-installed PyYAML -U jpl-rosa>=1.0.7; \
+    python3.9 -m pip install --ignore-installed PyYAML "pydantic<2" -U jpl-rosa>=1.0.7; \
     fi'
 
 # Use the startup script
