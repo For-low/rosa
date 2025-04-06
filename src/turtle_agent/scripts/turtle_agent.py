@@ -85,6 +85,9 @@ class TurtleAgent(ROSA):
             "Teleport to (3, 3) and draw a small hexagon.",
             "Give me a list of nodes, topics, services, params, and log files.",
             "Change the background color to light blue and the pen color to red.",
+            "What locations can you deliver to?",
+            "Can you deliver this screwdriver to the laboratory?",
+            "I'm thirsty, can you help me get water?",
         ]
 
         self.command_handler = {

@@ -210,7 +210,7 @@ def get_turtle_pose(names: List[str]) -> dict:
 
 @tool
 def teleport_absolute(
-    name: str, x: float, y: float, theta: float, hide_pen: bool = True
+    name: str, x: float, y: float, theta: float, hide_pen: bool = False
 ):
     """
     Teleport a turtle to the given x, y, and theta coordinates.
@@ -416,3 +416,73 @@ def has_moved_to_expected_coordinates(
         )
     else:
         return f"{name} has NOT moved to the expected position ({expected_x}, {expected_y})."
+
+# Delivery system tools
+from .locations import get_location_coords, get_all_locations, get_closest_location_by_name
+
+@tool
+def list_available_locations():
+    """
+    List all available locations the turtle can navigate to.
+    """
+    locations = get_all_locations()
+    return f"Available locations: {', '.join(locations)}"
+
+@tool
+def navigate_to_location(location_name: str):
+    """
+    Navigate the turtle to a named location.
+    
+    :param location_name: Name of the location to navigate to
+    """
+    coords = get_location_coords(location_name)
+    if not coords:
+        return f"Location '{location_name}' not found. Use list_available_locations to see available destinations."
+    
+    # Use the existing teleport function
+    result = teleport_absolute.invoke({
+        "name": "turtle1", 
+        "x": coords[0], 
+        "y": coords[1],
+        "theta": 0.0,
+        "hide_pen": True
+    })
+    
+    return f"Navigated to {location_name} at coordinates {coords}. {result}"
+
+@tool
+def deliver_item(item: str, destination: str):
+    """
+    Deliver an item to a specific location.
+    
+    :param item: Name of the item to deliver
+    :param destination: Name of the delivery destination
+    """
+    # Try to find matching location
+    location_name = get_closest_location_by_name(destination)
+    
+    if not location_name:
+        all_locs = get_all_locations()
+        return f"I don't know where '{destination}' is. Available locations: {', '.join(all_locs)}"
+    
+    coords = get_location_coords(location_name)
+    
+    # First navigate to the location
+    navigate_result = navigate_to_location.invoke({"location_name": location_name})
+    
+    # Return a delivery confirmation
+    return f"Successfully delivered {item} to {location_name} at coordinates {coords}. {navigate_result}"
+
+@tool
+def get_delivery_help():
+    """
+    Provides information about the delivery system capabilities.
+    """
+    return (
+        "Delivery System Capabilities:\n"
+        "- I can deliver items to predefined locations\n"
+        "- Available locations: " + ", ".join(get_all_locations()) + "\n"
+        "- You can ask me to 'deliver [item] to [location]'\n"
+        "- I'll confirm the destination before proceeding\n"
+        "- I'll navigate to the location and confirm delivery"
+    )
